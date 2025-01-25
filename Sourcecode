@@ -1,0 +1,56 @@
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
+
+# Load the dataset
+file_path = "your_dataset.csv"  # Replace with your dataset file name
+data = pd.read_csv(file_path)
+
+# Display basic information about the dataset
+print("Dataset Overview:")
+print(data.head())
+print("\nDataset Summary:")
+print(data.info())
+
+# Check for missing values and handle them (if any)
+if data.isnull().sum().sum() > 0:
+    print("\nHandling missing values...")
+    data.fillna(data.mean(), inplace=True)
+
+# Separate features (X) and target (y)
+# Replace 'Solar Power Output' with the actual target column name
+target_column = "Solar Power Output"
+X = data.drop(columns=[target_column])
+y = data[target_column]
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train a linear regression model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+print(f"\nModel Evaluation:\nMean Squared Error (MSE): {mse}\nR-squared (R2): {r2}")
+
+# Plot actual vs predicted values
+plt.figure(figsize=(8, 6))
+plt.scatter(y_test, y_pred, alpha=0.7)
+plt.title("Actual vs Predicted Solar Power Output")
+plt.xlabel("Actual Values")
+plt.ylabel("Predicted Values")
+plt.grid(True)
+plt.show()
+
+# Save the trained model (optional)
+import joblib
+joblib.dump(model, "solar_power_model.pkl")
+print("\nTrained model saved as 'solar_power_model.pkl'.")
